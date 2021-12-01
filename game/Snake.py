@@ -4,16 +4,16 @@
 # *************************************************************************************
 import collections
 
-from game.Board import Board,Directions
+from game.Board import Board, States
+from game.Directions import Directions
 from game.Coordinates import Coordinates
 
 
 class Snake:
-    def __init__(self, board: Board, loop_around: bool):
+    def __init__(self, board: Board):
         """Initializes Snake class"""
 
         self.board = board
-        self.loop_around = loop_around
         self.body = []
         self.body.append(self.initialize_snake())
         self.directions = collections.deque()
@@ -47,7 +47,7 @@ class Snake:
             updated_pos = pos.apply_modifier(direction)
 
             # Loop around logic
-            if self.loop_around:
+            if self.board.loop_around:
                 if updated_pos.x_coord == -1:
                     updated_pos.x_coord = self.board.rows -1
                 elif updated_pos.x_coord == self.board.rows:
@@ -59,6 +59,7 @@ class Snake:
                     updated_pos.y_coord = 0
 
             self.body[i] = updated_pos
+            self.update_snake_board()
 
     def extend_snake(self):
         """
@@ -83,3 +84,25 @@ class Snake:
                 self.body.append(snake_tail.apply_modifier(Directions.LEFT))
             case _:
                 raise LookupError
+        self.update_snake_board()
+
+    def update_snake_board(self):
+
+        for rowIndex in range(self.board.rows):
+            for colIndex in range(self.board.cols):
+                current_position_on_board = Coordinates(rowIndex, colIndex)
+                state: States = States.NONE
+                direction: Directions = Directions.NONE
+
+                if current_position_on_board in self.body:
+                    state = States.SNAKE_BODY
+                    head = self.body[0]
+                    if current_position_on_board == head:
+                        state = States.SNAKE_HEAD
+
+                    index = self.body.index(current_position_on_board)
+                    try:
+                        direction = self.directions.__getitem__(index)
+                    except IndexError:
+                        direction = Directions.NONE
+                    self.board.set_state_at(rowIndex, colIndex, state, direction)

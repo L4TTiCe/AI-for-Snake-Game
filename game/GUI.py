@@ -62,8 +62,8 @@ class GUI:
         space_row = (self.height - self.grid_start_y) // game.board.rows
 
         # Draw the fruit
-        fruit_y = game.fruit_pos.x_coord
-        fruit_x = game.fruit_pos.y_coord
+        fruit_y = game.board.fruit_pos.x_coord
+        fruit_x = game.board.fruit_pos.y_coord
         pygame.draw.rect(self.win, pygame.Color(250, 30, 30), (
             space_col * fruit_x + 1, self.grid_start_y + space_row * fruit_y + 1, space_col - 1, space_row - 1))
 

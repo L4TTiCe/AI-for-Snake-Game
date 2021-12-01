@@ -6,7 +6,8 @@ from game.SnakeGame import SnakeGame
 
 
 def main():
-    game = SnakeGame(loop_around=False)
+    size = int(input("Enter the size of the board: "))
+    game = SnakeGame(size, loop_around=False)
     view = GUI()
     pygame.font.init()
     view.redraw_window(game)

@@ -1,4 +1,6 @@
 from enum import Enum
+
+from game.Coordinates import Coordinates
 from game.Directions import Directions
 
 
@@ -14,6 +16,7 @@ class BoardState:
         self.state: States = state
         self.direction = direction
 
+
     def __str__(self):
         return self.state.name + " " + self.direction.name
 
@@ -22,9 +25,11 @@ class BoardState:
 
 
 class Board:
-    def __init__(self, rows: int, cols: int):
+    def __init__(self, rows: int, cols: int, loop_around: bool):
         self.rows: int = rows
         self.cols: int = cols
+        self.loop_around = loop_around
+        self.fruit_pos = Coordinates(0, 0)
 
         self.state = [[BoardState(States.NONE, Directions.NONE) for x in range(cols)] for y in range(rows)]
 
@@ -54,3 +59,20 @@ class Board:
     def set_state_at(self, row: int, col: int, state: States, direction: Directions):
         self.state[row][col].state = state
         self.state[row][col].direction = direction
+
+    def set_fruit_pos(self, fruit_pos: Coordinates):
+        self.fruit_pos = fruit_pos
+        self.update_board()
+
+    def update_board(self):
+        for rowIndex in range(self.rows):
+            for colIndex in range(self.cols):
+                current_position_on_board = Coordinates(rowIndex, colIndex)
+                state: States = States.NONE
+                direction: Directions = Directions.NONE
+                if current_position_on_board == self.fruit_pos:
+                    state = States.FOOD
+                    direction = Directions.NONE
+                    self.set_state_at(rowIndex, colIndex, state, direction)
+                else:
+                    self.set_state_at(rowIndex, colIndex, state, direction)

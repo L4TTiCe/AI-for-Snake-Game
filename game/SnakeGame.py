@@ -13,16 +13,13 @@ from game.Snake import Snake
 
 class SnakeGame:
 
-    def __init__(self, loop_around):
+    def __init__(self, size: int, loop_around):
         """Initializes the SnakeGame class."""
-        self.board = Board(10, 10)
-        self.loop_around = loop_around
-        self.snake = Snake(self.board, self.loop_around)
-        self.fruit_pos = Coordinates(0, 0)
-        self.generate_fruit()
+        self.board = Board(size, size, loop_around)
+        self.snake = Snake(self.board)
         self.score = 0
         self.game_state: GameState = GameState.INPROGRESS
-        self.loop_around = True
+        self.board.set_fruit_pos(self.generate_fruit())
 
     def generate_fruit(self):
         """Function to generate a new random position for the fruit."""
@@ -32,7 +29,7 @@ class SnakeGame:
         while fruit_pos in self.snake.body:
             fruit_pos = Coordinates(random.randrange(0, self.board.rows), random.randrange(0, self.board.cols))
 
-        self.fruit_pos = fruit_pos
+        return fruit_pos
 
     def move_snake(self, direction: Directions):
         """Function to allow the user to move the snake with the arrow keys."""
@@ -53,11 +50,11 @@ class SnakeGame:
     def check_fruit_collision(self):
         """Function that detects and handles if the snake has collided with a fruit."""
         # If we found a fruit
-        if self.snake.body[0] == self.fruit_pos:
+        if self.snake.body[0] == self.board.fruit_pos:
             # Add the new body square to the tail of the snake
             self.snake.extend_snake()
             # Generate a new fruit in a random position
-            self.generate_fruit()
+            self.board.set_fruit_pos(self.generate_fruit())
 
             self.score += 1
 
@@ -95,35 +92,9 @@ class SnakeGame:
         return self.score
 
     def get_board(self):
-        board = Board(self.board.rows, self.board.cols)
-
-        for rowIndex in range(self.board.rows):
-            for colIndex in range(self.board.cols):
-                current_position = Coordinates(rowIndex, colIndex)
-                state: States = States.NONE
-                direction: Directions = Directions.NONE
-                if current_position == self.fruit_pos:
-                    state = States.FOOD
-                    direction = Directions.NONE
-                    board.set_state_at(rowIndex, colIndex, state, direction)
-
-                elif current_position in self.snake.body:
-                    state = States.SNAKE_BODY
-                    head = self.snake.body[0]
-                    if current_position == head:
-                        state = States.SNAKE_HEAD
-
-                    index = self.snake.body.index(current_position)
-                    try:
-                        direction = self.snake.directions.__getitem__(index)
-                    except IndexError:
-                        direction = Directions.NONE
-                    board.set_state_at(rowIndex, colIndex, state, direction)
-
-                else:
-                    board.set_state_at(rowIndex, colIndex, state, direction)
-
-        return board
+        self.board.update_board()
+        self.snake.update_snake_board()
+        return self.board
 
     def get_score(self):
         return self.score
@@ -148,9 +119,10 @@ class SnakeGame:
         coordinates_around.append([snake_x_coordinate, snake_y_coordinate - 1, Directions.LEFT])
         # If loop_around is false
         for x, y, direction in coordinates_around:
-            if not self.loop_around:
+            if not self.board.loop_around:
                 if 0 <= x <= self.board.rows - 1 and 0 <= y <= self.board.cols - 1:
-                    if current_board_state.get_state_at(x, y).state == States.NONE:
+                    if current_board_state.get_state_at(x, y).state == States.NONE \
+                            or current_board_state.get_state_at(x, y).state == States.FOOD:
                         final_coordinates_around.append([x, y, direction])
             else:
                 # If loop around is true
