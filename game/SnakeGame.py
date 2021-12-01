@@ -149,7 +149,7 @@ class SnakeGame:
         # If loop_around is false
         for x, y, direction in coordinates_around:
             if not self.loop_around:
-                if 0 <= x <= self.rows - 1 and 0 <= y <= self.cols - 1:
+                if 0 <= x <= self.board.rows - 1 and 0 <= y <= self.board.cols - 1:
                     if current_board_state.get_state_at(x, y).state == States.NONE:
                         final_coordinates_around.append([x, y, direction])
             else:
