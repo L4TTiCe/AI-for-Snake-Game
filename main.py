@@ -27,7 +27,7 @@ def main():
                 game.move_snake(Directions.RIGHT)
             case _:
                 print("Invalid token use WSAD")
-
+        game.possible_moves()
         game.check_collisions()
         view.redraw_window(game)
         view.event_handler()
