@@ -37,29 +37,29 @@ class GUI:
     def draw_grid(self, game: SnakeGame):
         """Function to draw the grid in the pygame window where the game is played."""
 
-        space_col = self.width // game.cols
-        space_row = (self.height - self.grid_start_y) // game.rows
+        space_col = self.width // game.board.cols
+        space_row = (self.height - self.grid_start_y) // game.board.rows
 
-        for i in range(game.rows):
+        for i in range(game.board.rows):
             # draw horizontal line
             pygame.draw.line(self.win, pygame.Color(100, 100, 100), (0, space_row * i + self.grid_start_y),
                              (self.width, space_row * i + self.grid_start_y))
 
-        for i in range(game.cols):
+        for i in range(game.board.cols):
             # draw vertical line
             pygame.draw.line(self.win, pygame.Color(100, 100, 100), (space_col * i, self.grid_start_y),
                              (space_col * i, self.height))
 
         # draw last lines so they are not cut off
-        pygame.draw.line(self.win, pygame.Color(100, 100, 100), (space_col * game.rows - 2, self.grid_start_y),
-                         (space_col * game.rows - 2, self.height))
+        pygame.draw.line(self.win, pygame.Color(100, 100, 100), (space_col * game.board.rows - 2, self.grid_start_y),
+                         (space_col * game.board.rows - 2, self.height))
         pygame.draw.line(self.win, pygame.Color(100, 100, 100), (0, self.height - 2), (self.width, self.height - 2))
 
     def draw_grid_updates(self, game: SnakeGame):
         """Function called from redraw_window() to update the grid area of the window."""
 
-        space_col = self.width // game.cols
-        space_row = (self.height - self.grid_start_y) // game.rows
+        space_col = self.width // game.board.cols
+        space_row = (self.height - self.grid_start_y) // game.board.rows
 
         # Draw the fruit
         fruit_y = game.fruit_pos.x_coord

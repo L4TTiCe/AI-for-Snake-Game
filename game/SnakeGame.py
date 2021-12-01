@@ -15,10 +15,9 @@ class SnakeGame:
 
     def __init__(self, loop_around):
         """Initializes the SnakeGame class."""
-        self.rows = 10
-        self.cols = self.rows
+        self.board = Board(10, 10)
         self.loop_around = loop_around
-        self.snake = Snake(self.rows, self.cols, self.loop_around)
+        self.snake = Snake(self.board, self.loop_around)
         self.fruit_pos = Coordinates(0, 0)
         self.generate_fruit()
         self.score = 0
@@ -27,11 +26,11 @@ class SnakeGame:
 
     def generate_fruit(self):
         """Function to generate a new random position for the fruit."""
-        fruit_pos = Coordinates(random.randrange(0, self.rows), random.randrange(0, self.cols))
+        fruit_pos = Coordinates(random.randrange(0, self.board.rows), random.randrange(0, self.board.cols))
 
         # Continually generate a location for the fruit until it is not in the snake's body
         while fruit_pos in self.snake.body:
-            fruit_pos = Coordinates(random.randrange(0, self.rows), random.randrange(0, self.cols))
+            fruit_pos = Coordinates(random.randrange(0, self.board.rows), random.randrange(0, self.board.cols))
 
         self.fruit_pos = fruit_pos
 
@@ -71,7 +70,7 @@ class SnakeGame:
         head_x = head.x_coord
 
         # If there is a wall collision, game over
-        if head_x == self.cols or head_y == self.rows or head_x < 0 or head_y < 0:
+        if head_x == self.board.cols or head_y == self.board.rows or head_x < 0 or head_y < 0:
             self.game_over()
 
     def check_body_collision(self):
@@ -96,10 +95,10 @@ class SnakeGame:
         return self.score
 
     def get_board(self):
-        board = Board(self.rows, self.cols)
+        board = Board(self.board.rows, self.board.cols)
 
-        for rowIndex in range(self.rows):
-            for colIndex in range(self.cols):
+        for rowIndex in range(self.board.rows):
+            for colIndex in range(self.board.cols):
                 current_position = Coordinates(rowIndex, colIndex)
                 state: States = States.NONE
                 direction: Directions = Directions.NONE
