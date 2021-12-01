@@ -10,7 +10,7 @@ from game.SnakeGame import SnakeGame
 
 # Uses keyboard (python module) to directly query for key presses, without relying on the console inputs.
 def play_game():
-    game = SnakeGame()
+    game = SnakeGame(loop_around=False)
     view = GUI()
     pygame.font.init()
     view.redraw_window(game)

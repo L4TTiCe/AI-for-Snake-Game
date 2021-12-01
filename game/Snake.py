@@ -9,11 +9,12 @@ from game.Coordinates import Coordinates
 
 
 class Snake:
-    def __init__(self, rows, cols):
+    def __init__(self, rows, cols, loop_around):
         """Initializes Snake class"""
 
         self.rows = rows
         self.cols = cols
+        self.loop_around = loop_around
         self.body = []
         self.body.append(self.initialize_snake())
         self.directions = collections.deque()
@@ -44,7 +45,21 @@ class Snake:
             # Get the direction to move next that corresponds to the body position
             direction = self.directions[i]
             # Update the body position after moving in the direction
-            self.body[i] = pos.apply_modifier(direction)
+            updated_pos = pos.apply_modifier(direction)
+
+            # Loop around logic
+            if self.loop_around:
+                if updated_pos.x_coord == -1:
+                    updated_pos.x_coord = self.rows -1
+                elif updated_pos.x_coord == self.rows:
+                    updated_pos.x_coord = 0
+
+                if updated_pos.y_coord == -1:
+                    updated_pos.y_coord = self.cols -1
+                elif updated_pos.y_coord == self.cols:
+                    updated_pos.y_coord = 0
+
+            self.body[i] = updated_pos
 
     def extend_snake(self):
         """
