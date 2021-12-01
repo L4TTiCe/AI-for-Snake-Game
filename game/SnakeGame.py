@@ -13,16 +13,16 @@ from game.Snake import Snake
 
 class SnakeGame:
 
-    def __init__(self):
+    def __init__(self, loop_around):
         """Initializes the SnakeGame class."""
         self.rows = 10
         self.cols = self.rows
-        self.snake = Snake(self.rows, self.cols)
+        self.loop_around = loop_around
+        self.snake = Snake(self.rows, self.cols, self.loop_around)
         self.fruit_pos = Coordinates(0, 0)
         self.generate_fruit()
         self.score = 0
         self.game_state: GameState = GameState.INPROGRESS
-        self.loop_around = True
 
     def generate_fruit(self):
         """Function to generate a new random position for the fruit."""

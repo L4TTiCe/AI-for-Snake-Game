@@ -6,7 +6,7 @@ from game.SnakeGame import SnakeGame
 
 
 def main():
-    game = SnakeGame()
+    game = SnakeGame(loop_around=False)
     view = GUI()
     pygame.font.init()
     view.redraw_window(game)
