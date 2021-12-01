@@ -23,6 +23,7 @@ class SnakeGame:
         self.generate_fruit()
         self.score = 0
         self.game_state: GameState = GameState.INPROGRESS
+        self.loop_around = True
 
     def generate_fruit(self):
         """Function to generate a new random position for the fruit."""
@@ -127,3 +128,37 @@ class SnakeGame:
 
     def get_score(self):
         return self.score
+
+    # This functions returns a list of directions that the snake can take after the current position
+    def possible_moves(self):
+        """This function returns the possible set of moves that the snake can take from the current position"""
+        snake_head = self.snake.body[0]
+        # A list of the coordinates around the snake and the direction possible
+        coordinates_around = []
+        # Snake's head x-coordinate
+        snake_x_coordinate = snake_head.x_coord
+        # Snake's head y-coordinate
+        snake_y_coordinate = snake_head.y_coord
+        # Gets the current board state
+        current_board_state = self.get_board()
+        final_coordinates_around = []
+        # Append the coordinates possible around the board
+        coordinates_around.append([snake_x_coordinate + 1, snake_y_coordinate, Directions.DOWN])
+        coordinates_around.append([snake_x_coordinate, snake_y_coordinate + 1, Directions.RIGHT])
+        coordinates_around.append([snake_x_coordinate - 1, snake_y_coordinate, Directions.UP])
+        coordinates_around.append([snake_x_coordinate, snake_y_coordinate - 1, Directions.LEFT])
+        # If loop_around is false
+        for x, y, direction in coordinates_around:
+            if not self.loop_around:
+                if 0 <= x <= self.rows - 1 and 0 <= y <= self.cols - 1:
+                    if current_board_state.get_state_at(x, y).state == States.NONE:
+                        final_coordinates_around.append([x, y, direction])
+            else:
+                # If loop around is true
+                coordinates = snake_head.apply_modifier(direction)
+                x = coordinates.x_coord
+                y = coordinates.y_coord
+                if current_board_state.get_state_at(x, y).state == States.NONE:
+                    final_coordinates_around.append([x, y, direction])
+
+        print(final_coordinates_around)
