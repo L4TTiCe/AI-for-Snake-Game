@@ -1,6 +1,6 @@
 import pygame
 
-from game.Board import Directions
+from game.Board import Actions
 from game.GUI import GUI
 from game.SnakeGame import SnakeGame
 
@@ -14,22 +14,23 @@ def main():
 
     while not game.is_game_over():
         print(game.get_board())
-        print(f'Score: {game.get_score()}')
-        print(game.snake.directions)
+        print(f'Score: {game.board.get_score()}')
+        print(game.board.snake.directions)
         token = input("Move: ")
         match token:
             case "w":
-                game.move_snake(Directions.UP)
+                game.move_snake(Actions.UP)
             case "s":
-                game.move_snake(Directions.DOWN)
+                game.move_snake(Actions.DOWN)
             case "a":
-                game.move_snake(Directions.LEFT)
+                game.move_snake(Actions.LEFT)
             case "d":
-                game.move_snake(Directions.RIGHT)
+                game.move_snake(Actions.RIGHT)
             case _:
                 print("Invalid token use WSAD")
+
+        game.board.check_collisions()
         game.possible_moves()
-        game.check_collisions()
         view.redraw_window(game)
         view.event_handler()
 

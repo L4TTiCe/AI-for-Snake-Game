@@ -4,7 +4,7 @@
 # *************************************************************************************
 import pygame
 
-from game.Board import Directions
+from game.Board import Actions
 from game.SnakeGame import SnakeGame
 
 
@@ -31,7 +31,7 @@ class GUI:
 
         # Add the score and high score
         font = pygame.font.SysFont('calibri', 20)
-        score_text = font.render('Score: ' + str(game.get_score()), 1, (255, 255, 255))
+        score_text = font.render('Score: ' + str(game.board.get_score()), 1, (255, 255, 255))
         self.win.blit(score_text, (10, 5))
 
     def draw_grid(self, game: SnakeGame):
@@ -68,25 +68,25 @@ class GUI:
             space_col * fruit_x + 1, self.grid_start_y + space_row * fruit_y + 1, space_col - 1, space_row - 1))
 
         # Draw the updated snake since last movement
-        for pos in game.snake.body:
+        for pos in game.board.snake.body:
             pos_y = pos.x_coord
             pos_x = pos.y_coord
 
             pygame.draw.rect(self.win, pygame.Color(31, 240, 12), (
                 space_col * pos_x + 1, self.grid_start_y + space_row * pos_y + 1, space_col - 1, space_row - 1))
 
-        head = game.snake.body[0]
+        head = game.board.snake.body[0]
         head_y = head.x_coord
         head_x = head.y_coord
         try:
-            head_dir = game.snake.directions[0]
+            head_dir = game.board.snake.directions[0]
         except IndexError:
-            head_dir = Directions.DOWN
+            head_dir = Actions.DOWN
 
         # Draw eyes on the head of the snake, determining which direction they should face
 
         # if head facing left
-        if head_dir == Directions.LEFT:
+        if head_dir == Actions.LEFT:
             # draw left eye
             pygame.draw.circle(self.win, pygame.Color(100, 100, 100), (
                 space_col * head_x + space_col // 10, self.grid_start_y + space_row * head_y + (space_row * 4) // 5), 2)
@@ -94,7 +94,7 @@ class GUI:
             pygame.draw.circle(self.win, pygame.Color(100, 100, 100), (
                 space_col * head_x + space_col // 10, self.grid_start_y + space_row * head_y + space_row // 5), 2)
         # if head facing up
-        elif head_dir == Directions.UP:
+        elif head_dir == Actions.UP:
             # draw left eye
             pygame.draw.circle(self.win, pygame.Color(100, 100, 100), (
                 space_col * head_x + space_col // 5, self.grid_start_y + space_row * head_y + space_row // 10), 2)
@@ -102,7 +102,7 @@ class GUI:
             pygame.draw.circle(self.win, pygame.Color(100, 100, 100), (
                 space_col * head_x + (space_col * 4) // 5, self.grid_start_y + space_row * head_y + space_row // 10), 2)
         # if head facing right
-        elif head_dir == Directions.RIGHT:
+        elif head_dir == Actions.RIGHT:
             # draw left eye
             pygame.draw.circle(self.win, pygame.Color(100, 100, 100), (
                 space_col * head_x + (space_col * 9) // 10, self.grid_start_y + space_row * head_y + space_row // 5), 2)
