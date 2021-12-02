@@ -23,7 +23,7 @@ def make_move(game, view, action):
 
 
 def main():
-    game = SnakeGame(2, loop_around=False)
+    game = SnakeGame(6, loop_around=True)
     view = GUI()
     pygame.font.init()
     view.redraw_window(game)
@@ -38,14 +38,16 @@ def main():
 
         traversal_agent = DFS(game.board)
         actions = traversal_agent.find_path()
-        print(actions)
 
         if actions is None:
-            action = random.choice(list(Actions))
+            print(game.board.possible_actions())
+            action = random.choice(list(game.board.possible_actions()))
+            print(action)
             make_move(game, view, action)
         else:
             for action in actions:
-                make_move(game, view, action)
+                if not game.is_game_over():
+                    make_move(game, view, action)
 
 
 # Press the green button in the gutter to run the script.

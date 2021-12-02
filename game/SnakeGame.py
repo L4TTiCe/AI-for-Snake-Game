@@ -16,7 +16,10 @@ class SnakeGame:
 
     def move_snake(self, action: Actions):
         """Function to allow the user to move the snake with the arrow keys."""
-        self.board.move(action)
+        if not self.is_game_over():
+            self.board.move(action)
+        else:
+            raise RuntimeError
 
     def is_game_over(self):
         if self.board.game_state == GameState.INPROGRESS:
@@ -64,7 +67,7 @@ class SnakeGame:
                 if current_board_state.get_state_at(x, y).state == States.NONE:
                     final_coordinates_around.append([x, y, direction])
 
-        print(final_coordinates_around)
+        # print(final_coordinates_around)
 
     def get_successor_state(self, action: Actions):
         return self.board.get_successor_state(action)

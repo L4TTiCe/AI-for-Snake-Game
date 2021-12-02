@@ -34,10 +34,10 @@ class Board:
         self.loop_around: bool = loop_around
         self.snake = self.Snake()
         self.snake.body.append(self.initialize_snake())
-        self.fruit_pos: Coordinates = self.generate_fruit()
         self.game_state: GameState = GameState.INPROGRESS
         self.state = [[BoardState(States.NONE, Actions.NONE) for x in range(cols)] for y in range(rows)]
         self.score: int = 0
+        self.fruit_pos: Coordinates = self.generate_fruit()
         self.update_board()
 
     def __str__(self):
@@ -49,7 +49,7 @@ class Board:
                 elif self.state[row_index][col_index].state == States.SNAKE_HEAD:
                     output = output + " O "
                 elif self.state[row_index][col_index].state == States.SNAKE_BODY:
-                    print(self.state[row_index][col_index].direction)
+                    # print(self.state[row_index][col_index].direction)
                     if self.state[row_index][col_index].direction == Actions.UP \
                             or self.state[row_index][col_index].direction == Actions.DOWN:
                         output = output + " | "
@@ -66,15 +66,31 @@ class Board:
     def get_score(self):
         return self.score
 
+    def is_board_full(self):
+        is_full: bool = True
+        for row_index in range(self.rows):
+            for col_index in range(self.cols):
+                if self.state[row_index][col_index].state == States.NONE:
+                    is_full = False
+                    return is_full
+        if is_full:
+            print("Board is Full! Ending Game.")
+            self.game_state = GameState.OVER
+            return is_full
+
     def generate_fruit(self):
         """Function to generate a new random position for the fruit."""
-        fruit_pos: Coordinates = Coordinates(random.randrange(0, self.rows), random.randrange(0, self.cols))
+        if not self.is_board_full():
+            fruit_pos: Coordinates = Coordinates(random.randrange(0, self.rows), random.randrange(0, self.cols))
 
-        # Continually generate a location for the fruit until it is not in the snake's body
-        while fruit_pos in self.snake.body:
-            fruit_pos = Coordinates(random.randrange(0, self.rows), random.randrange(0, self.cols))
+            # Continually generate a location for the fruit until it is not in the snake's body
+            while fruit_pos in self.snake.body:
+                fruit_pos = Coordinates(random.randrange(0, self.rows), random.randrange(0, self.cols))
 
-        return fruit_pos
+            return fruit_pos
+        else:
+            print(self)
+            raise LookupError
 
     def get_state_at(self, row: int, col: int):
         return self.state[row][col]
@@ -142,6 +158,7 @@ class Board:
 
         # If there is a wall collision, game over
         if head_x == self.cols or head_y == self.rows or head_x < 0 or head_y < 0:
+            print("Collision. Game Over.")
             self.game_state = GameState.OVER
 
     def check_body_collision(self):
@@ -152,6 +169,7 @@ class Board:
             head = self.snake.body[0]
             body_without_head = self.snake.body[1:]
             if head in body_without_head:
+                print("Self-Collision. Game Over.")
                 self.game_state = GameState.OVER
 
     def initialize_snake(self):
@@ -219,7 +237,7 @@ class Board:
             case Actions.RIGHT:
                 self.snake.body.append(snake_tail.apply_modifier(Actions.LEFT))
             case _:
-                print(tail_dir)
+                # print(tail_dir)
                 if tail_dir.__str__() == "[<Actions.UP: 2>]":
                     self.snake.body.append(snake_tail.apply_modifier(Actions.DOWN))
                 elif tail_dir.__str__() == "[<Actions.DOWN: 8>]":
@@ -261,8 +279,8 @@ class Board:
             else:
                 # If loop around is true
                 coordinates = snake_head.apply_modifier(direction)
-                x = coordinates.x_coord
-                y = coordinates.y_coord
+                x = coordinates.x_coord // self.rows
+                y = coordinates.y_coord // self.cols
                 if self.get_state_at(x, y).state == States.NONE or self.get_state_at(x, y).state == States.FOOD:
                     final_coordinates_around.append([direction])
         return final_coordinates_around
