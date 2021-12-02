@@ -251,7 +251,7 @@ class Board:
                 y = coordinates.y_coord
                 if self.get_state_at(x, y).state == States.NONE or self.get_state_at(x, y).state == States.FOOD:
                     final_coordinates_around.append([direction])
-        print(final_coordinates_around)
+        return final_coordinates_around
 
     def move(self, action: Actions):
         self.snake.directions.appendleft(action)
