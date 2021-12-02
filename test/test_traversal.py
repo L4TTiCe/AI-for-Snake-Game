@@ -3,9 +3,11 @@ import time
 
 import pygame
 
+from game.Actions import Actions
 from game.GUI import GUI
 from game.SnakeGame import SnakeGame
 from pathtraversal.DFS import DFS
+from pathtraversal.BFS import BFS
 
 
 def make_move(game, view, action):
@@ -22,7 +24,7 @@ def make_move(game, view, action):
 
 
 def main():
-    game = SnakeGame(6, loop_around=True)
+    game = SnakeGame(10, loop_around=True)
     view = GUI()
     pygame.font.init()
     view.redraw_window(game)
@@ -35,16 +37,21 @@ def main():
         # https://stackoverflow.com/questions/20165492/pygame-window-not-responding-after-a-few-seconds
         pygame.event.get()
 
-        traversal_agent = DFS(game.board)
+        traversal_agent = BFS(game.board)
         actions = traversal_agent.find_path()
 
         if actions is None:
             print(game.board.possible_actions())
-            action = random.choice(list(game.board.possible_actions()))
+            possible_actions = game.board.possible_actions()
+            if possible_actions:
+                action = random.choice(list(possible_actions))
+            else:
+                action = random.choice(list(Actions))
             print(action)
             make_move(game, view, action)
         else:
             for action in actions:
+                pygame.event.get()
                 if not game.is_game_over():
                     make_move(game, view, action)
 

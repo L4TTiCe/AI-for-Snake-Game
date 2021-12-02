@@ -90,7 +90,7 @@ class Board:
             return fruit_pos
         else:
             print(self)
-            raise LookupError
+            # raise LookupError
 
     def get_state_at(self, row: int, col: int):
         return self.state[row][col]
