@@ -2,9 +2,8 @@
 # Adapted from the work of [Craig Haber](https://github.com/craighaber) with the
 # original work available at https://github.com/craighaber/AI-for-Snake-Game
 # *************************************************************************************
-import copy
-from game.Board import Board, States
 from game.Actions import Actions
+from game.Board import Board, States
 from game.GameState import GameState
 
 

@@ -1,9 +1,8 @@
 import random
-
-import pygame
 import time
 
-from game.Actions import Actions
+import pygame
+
 from game.GUI import GUI
 from game.SnakeGame import SnakeGame
 from pathtraversal.DFS import DFS

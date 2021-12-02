@@ -1,10 +1,10 @@
 import collections
 import copy
-from enum import Enum
 import random
+from enum import Enum
 
-from game.Coordinates import Coordinates
 from game.Actions import Actions
+from game.Coordinates import Coordinates
 from game.GameState import GameState
 
 

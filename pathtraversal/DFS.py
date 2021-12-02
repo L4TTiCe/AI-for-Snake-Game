@@ -1,13 +1,8 @@
-from game.Board import Board
-from game.Actions import Actions
-from game.Coordinates import Coordinates
 from typing import List
 
-
-class BoardWrapper:
-    def __init__(self, board: Board, actions: List[Actions]):
-        self.board: Board = board
-        self.action: List[Actions] = actions
+from game.Board import Board
+from game.Coordinates import Coordinates
+from pathtraversal.BoardWrapper import BoardWrapper
 
 
 class DFS:
@@ -40,9 +35,3 @@ class DFS:
                     updated_actions: List[action] = curr_actions.copy()
                     updated_actions.append(action)
                     self.frontier.append(BoardWrapper(new_state, updated_actions))
-
-
-
-
-
-
