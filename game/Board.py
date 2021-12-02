@@ -1,10 +1,12 @@
 import collections
+import copy
 from enum import Enum
 import random
 
 from game.Coordinates import Coordinates
 from game.Actions import Actions
 from game.GameState import GameState
+
 
 class States(Enum):
     NONE = "States.NONE",
@@ -47,8 +49,8 @@ class Board:
                     output = output + " O "
                 elif self.state[row_index][col_index].state == States.SNAKE_BODY:
                     print(self.state[row_index][col_index].direction)
-                    if self.state[row_index][col_index].direction == Actions.UP or self.state[row_index][
-                        col_index].direction == Actions.DOWN:
+                    if self.state[row_index][col_index].direction == Actions.UP \
+                            or self.state[row_index][col_index].direction == Actions.DOWN:
                         output = output + " | "
                     else:
                         output = output + "---"
@@ -94,6 +96,17 @@ class Board:
                     state = States.FOOD
                     direction = Actions.NONE
                     self.set_state_at(rowIndex, colIndex, state, direction)
+                elif current_position_on_board in self.snake.body:
+                    state = States.SNAKE_BODY
+                    head = self.snake.body[0]
+                    if current_position_on_board == head:
+                        state = States.SNAKE_HEAD
+                    index = self.snake.body.index(current_position_on_board)
+                    try:
+                        direction = self.snake.directions.__getitem__(index)
+                    except IndexError:
+                        direction = Actions.NONE
+                    self.set_state_at(rowIndex, colIndex, state, direction)
                 else:
                     self.set_state_at(rowIndex, colIndex, state, direction)
 
@@ -113,7 +126,7 @@ class Board:
             self.extend_snake()
             # Generate a new fruit in a random position
             self.set_fruit_pos(self.generate_fruit())
-
+            self.update_board()
             return 1
         else:
             return 0
@@ -181,7 +194,7 @@ class Board:
                     updated_pos.y_coord = 0
 
             self.snake.body[i] = updated_pos
-            self.update_snake_board()
+            self.update_board()
 
     def extend_snake(self):
         """
@@ -206,28 +219,50 @@ class Board:
                 self.snake.body.append(snake_tail.apply_modifier(Actions.LEFT))
             case _:
                 raise LookupError
-        self.update_snake_board()
+        self.update_board()
 
-    def update_snake_board(self):
+        # This functions returns a list of directions that the snake can take after the current position
 
-        for rowIndex in range(self.rows):
-            for colIndex in range(self.cols):
-                current_position_on_board = Coordinates(rowIndex, colIndex)
-                state: States = States.NONE
-                direction: Actions = Actions.NONE
+    def possible_actions(self):
+        """This function returns the possible set of moves that the snake can take from the current position"""
+        snake_head = self.snake.body[0]
+        # A list of the coordinates around the snake and the direction possible
+        coordinates_around = []
+        # Snake's head x-coordinate
+        snake_x_coordinate = snake_head.x_coord
+        # Snake's head y-coordinate
+        snake_y_coordinate = snake_head.y_coord
+        final_coordinates_around = []
+        # Append the coordinates possible around the board
+        coordinates_around.append([snake_x_coordinate + 1, snake_y_coordinate, Actions.DOWN])
+        coordinates_around.append([snake_x_coordinate, snake_y_coordinate + 1, Actions.RIGHT])
+        coordinates_around.append([snake_x_coordinate - 1, snake_y_coordinate, Actions.UP])
+        coordinates_around.append([snake_x_coordinate, snake_y_coordinate - 1, Actions.LEFT])
+        # If loop_around is false
+        for x, y, direction in coordinates_around:
+            if not self.loop_around:
+                if 0 <= x <= self.rows - 1 and 0 <= y <= self.cols - 1:
+                    if self.get_state_at(x, y).state == States.NONE or self.get_state_at(x, y).state == States.FOOD:
+                        final_coordinates_around.append([direction])
+            else:
+                # If loop around is true
+                coordinates = snake_head.apply_modifier(direction)
+                x = coordinates.x_coord
+                y = coordinates.y_coord
+                if self.get_state_at(x, y).state == States.NONE or self.get_state_at(x, y).state == States.FOOD:
+                    final_coordinates_around.append([direction])
+        print(final_coordinates_around)
 
-                if current_position_on_board in  self.snake.body:
-                    state = States.SNAKE_BODY
-                    head =  self.snake.body[0]
-                    if current_position_on_board == head:
-                        state = States.SNAKE_HEAD
+    def move(self, action: Actions):
+        self.snake.directions.appendleft(action)
+        if len(self.snake.directions) > len(self.snake.body):
+            self.snake.directions.pop()
+        self.update_body_positions()
 
-                    index = self.snake.body.index(current_position_on_board)
-                    try:
-                        direction = self.snake.directions.__getitem__(index)
-                    except IndexError:
-                        direction = Actions.NONE
-                    self.set_state_at(rowIndex, colIndex, state, direction)
+    def get_successor_state(self, action: Actions):
+        new_state = copy.deepcopy(self)
+        new_state.move(action)
+        return new_state
 
     class Snake:
         def __init__(self):

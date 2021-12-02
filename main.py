@@ -15,7 +15,6 @@ def main():
     while not game.is_game_over():
         print(game.get_board())
         print(f'Score: {game.board.get_score()}')
-        print(game.board.snake.directions)
         token = input("Move: ")
         match token:
             case "w":
@@ -30,7 +29,7 @@ def main():
                 print("Invalid token use WSAD")
 
         game.board.check_collisions()
-        game.possible_moves()
+        game.board.possible_actions()
         view.redraw_window(game)
         view.event_handler()
 
