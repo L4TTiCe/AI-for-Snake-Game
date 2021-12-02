@@ -33,7 +33,9 @@ class Board:
         self.cols: int = cols
         self.loop_around: bool = loop_around
         self.snake = self.Snake()
-        self.snake.body.append(self.initialize_snake())
+        self.snake.body.append(Coordinates(self.rows // 2, self.cols // 2))
+        print(self.snake.body)
+        print(self.snake.directions)
         self.game_state: GameState = GameState.INPROGRESS
         self.state = [[BoardState(States.NONE, Actions.NONE) for x in range(cols)] for y in range(rows)]
         self.score: int = 0
@@ -152,6 +154,8 @@ class Board:
         """Function that checks and handles if the snake has collided with a wall."""
 
         # Only need to check the collisions of the head of the snake
+        print(self.snake.body)
+        print(self.snake.directions)
         head = self.snake.body[0]
         head_y = head.y_coord
         head_x = head.x_coord
@@ -172,19 +176,6 @@ class Board:
                 print("Self-Collision. Game Over.")
                 self.game_state = GameState.OVER
 
-    def initialize_snake(self):
-        """
-        Initializes the first position for the snake.
-
-        Returns:
-        A Coordinate representing the position for the snake.
-
-        """
-        snake_row = self.rows // 2
-        snake_col = self.cols // 2
-
-        return Coordinates(snake_row, snake_col)
-
     def update_body_positions(self):
         """
         Updates the snake's body positions.
@@ -198,19 +189,7 @@ class Board:
             # Get the direction to move next that corresponds to the body position
             direction = self.snake.directions[i]
             # Update the body position after moving in the direction
-            updated_pos = pos.apply_modifier(direction)
-
-            # Loop around logic
-            if self.loop_around:
-                if updated_pos.x_coord == -1:
-                    updated_pos.x_coord = self.rows - 1
-                elif updated_pos.x_coord == self.rows:
-                    updated_pos.x_coord = 0
-
-                if updated_pos.y_coord == -1:
-                    updated_pos.y_coord = self.rows - 1
-                elif updated_pos.y_coord == self.cols:
-                    updated_pos.y_coord = 0
+            updated_pos = pos.apply_modifier(direction, self.loop_around, self.rows)
 
             self.snake.body[i] = updated_pos
             self.update_board()
@@ -229,23 +208,23 @@ class Board:
         # spawn the new body component in the opposite direction of the snake's movement
         match tail_dir:
             case Actions.DOWN:
-                self.snake.body.append(snake_tail.apply_modifier(Actions.UP))
+                self.snake.body.append(snake_tail.apply_modifier(Actions.UP, self.loop_around, self.rows))
             case Actions.UP:
-                self.snake.body.append(snake_tail.apply_modifier(Actions.DOWN))
+                self.snake.body.append(snake_tail.apply_modifier(Actions.DOWN, self.loop_around, self.rows))
             case Actions.LEFT:
-                self.snake.body.append(snake_tail.apply_modifier(Actions.RIGHT))
+                self.snake.body.append(snake_tail.apply_modifier(Actions.RIGHT, self.loop_around, self.rows))
             case Actions.RIGHT:
-                self.snake.body.append(snake_tail.apply_modifier(Actions.LEFT))
+                self.snake.body.append(snake_tail.apply_modifier(Actions.LEFT, self.loop_around, self.rows))
             case _:
                 # print(tail_dir)
                 if tail_dir.__str__() == "[<Actions.UP: 2>]":
-                    self.snake.body.append(snake_tail.apply_modifier(Actions.DOWN))
+                    self.snake.body.append(snake_tail.apply_modifier(Actions.DOWN, self.loop_around, self.rows))
                 elif tail_dir.__str__() == "[<Actions.DOWN: 8>]":
-                    self.snake.body.append(snake_tail.apply_modifier(Actions.UP))
+                    self.snake.body.append(snake_tail.apply_modifier(Actions.UP, self.loop_around, self.rows))
                 elif tail_dir.__str__() == "[<Actions.LEFT: 4>]":
-                    self.snake.body.append(snake_tail.apply_modifier(Actions.RIGHT))
+                    self.snake.body.append(snake_tail.apply_modifier(Actions.RIGHT, self.loop_around, self.rows))
                 elif tail_dir.__str__() == "[<Actions.RIGHT: 6>]":
-                    self.snake.body.append(snake_tail.apply_modifier(Actions.LEFT))
+                    self.snake.body.append(snake_tail.apply_modifier(Actions.LEFT, self.loop_around, self.rows))
                 elif tail_dir.__str__() == "[<Actions.NONE: 5>]":
                     raise NotImplementedError
                 else:
@@ -257,33 +236,27 @@ class Board:
 
     def possible_actions(self):
         """This function returns the possible set of moves that the snake can take from the current position"""
-        snake_head = self.snake.body[0]
-        # A list of the coordinates around the snake and the direction possible
-        coordinates_around = []
-        # Snake's head x-coordinate
-        snake_x_coordinate = snake_head.x_coord
-        # Snake's head y-coordinate
-        snake_y_coordinate = snake_head.y_coord
-        final_coordinates_around = []
-        # Append the coordinates possible around the board
-        coordinates_around.append([snake_x_coordinate + 1, snake_y_coordinate, Actions.DOWN])
-        coordinates_around.append([snake_x_coordinate, snake_y_coordinate + 1, Actions.RIGHT])
-        coordinates_around.append([snake_x_coordinate - 1, snake_y_coordinate, Actions.UP])
-        coordinates_around.append([snake_x_coordinate, snake_y_coordinate - 1, Actions.LEFT])
-        # If loop_around is false
-        for x, y, direction in coordinates_around:
+        snake_head: Coordinates = self.snake.body[0]
+        possible_movement: list[(Coordinates, Actions)] = [
+            (snake_head.apply_modifier(Actions.UP, self.loop_around, self.rows), Actions.UP),
+            (snake_head.apply_modifier(Actions.RIGHT, self.loop_around, self.rows), Actions.RIGHT),
+            (snake_head.apply_modifier(Actions.LEFT, self.loop_around, self.rows), Actions.LEFT),
+            (snake_head.apply_modifier(Actions.DOWN, self.loop_around, self.rows), Actions.DOWN)]
+
+        possible_actions: list[Actions] = []
+
+        for coords, action in possible_movement:
             if not self.loop_around:
-                if 0 <= x <= self.rows - 1 and 0 <= y <= self.cols - 1:
-                    if self.get_state_at(x, y).state == States.NONE or self.get_state_at(x, y).state == States.FOOD:
-                        final_coordinates_around.append([direction])
+                if 0 <= coords.x_coord <= self.rows - 1 and 0 <= coords.y_coord <= self.cols - 1:
+                    if self.get_state_at(coords.x_coord, coords.y_coord).state == States.NONE \
+                            or self.get_state_at(coords.x_coord, coords.y_coord).state == States.FOOD:
+                        possible_actions.append(action)
             else:
-                # If loop around is true
-                coordinates = snake_head.apply_modifier(direction)
-                x = coordinates.x_coord // self.rows
-                y = coordinates.y_coord // self.cols
-                if self.get_state_at(x, y).state == States.NONE or self.get_state_at(x, y).state == States.FOOD:
-                    final_coordinates_around.append([direction])
-        return final_coordinates_around
+                if self.get_state_at(coords.x_coord, coords.y_coord).state == States.NONE \
+                        or self.get_state_at(coords.x_coord, coords.y_coord).state == States.FOOD:
+                    possible_actions.append(action)
+
+        return possible_actions
 
     def move(self, action: Actions):
         self.snake.directions.appendleft(action)
@@ -299,5 +272,5 @@ class Board:
     class Snake:
         def __init__(self):
             """Initializes Snake class"""
-            self.body = []
+            self.body: list[Coordinates] = []
             self.directions = collections.deque()
