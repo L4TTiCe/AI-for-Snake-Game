@@ -16,13 +16,7 @@ class SnakeGame:
 
     def move_snake(self, action: Actions):
         """Function to allow the user to move the snake with the arrow keys."""
-        self.move(self.board, action)
-
-    def move(self, board: Board, action: Actions):
-        board.snake.directions.appendleft(action)
-        if len(board.snake.directions) > len(board.snake.body):
-            board.snake.directions.pop()
-        board.update_body_positions()
+        self.board.move(action)
 
     def is_game_over(self):
         if self.board.game_state == GameState.INPROGRESS:
@@ -32,7 +26,6 @@ class SnakeGame:
 
     def get_board(self):
         self.board.update_board()
-        self.board.update_snake_board()
         return self.board
 
     # This functions returns a list of directions that the snake can take after the current position
@@ -70,6 +63,5 @@ class SnakeGame:
 
         print(final_coordinates_around)
 
-    def get_Successor_state(self, action: Actions):
-        new_state = copy.deepcopy(self.board.snake)
-        self.move(self.board.snake, action)
+    def get_successor_state(self, action: Actions):
+        return self.board.get_successor_state(action)
