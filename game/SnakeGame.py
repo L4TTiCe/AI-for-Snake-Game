@@ -2,9 +2,8 @@
 # Adapted from the work of [Craig Haber](https://github.com/craighaber) with the
 # original work available at https://github.com/craighaber/AI-for-Snake-Game
 # *************************************************************************************
-import copy
-from game.Board import Board, States
 from game.Actions import Actions
+from game.Board import Board, States
 from game.GameState import GameState
 
 
@@ -16,7 +15,10 @@ class SnakeGame:
 
     def move_snake(self, action: Actions):
         """Function to allow the user to move the snake with the arrow keys."""
-        self.board.move(action)
+        if not self.is_game_over():
+            self.board.move(action)
+        else:
+            raise RuntimeError
 
     def is_game_over(self):
         if self.board.game_state == GameState.INPROGRESS:
@@ -27,6 +29,9 @@ class SnakeGame:
     def get_board(self):
         self.board.update_board()
         return self.board
+
+    def check_collision(self):
+        self.board.check_collision()
 
     # This functions returns a list of directions that the snake can take after the current position
     def possible_moves(self):
@@ -61,7 +66,7 @@ class SnakeGame:
                 if current_board_state.get_state_at(x, y).state == States.NONE:
                     final_coordinates_around.append([x, y, direction])
 
-        print(final_coordinates_around)
+        # print(final_coordinates_around)
 
     def get_successor_state(self, action: Actions):
         return self.board.get_successor_state(action)
