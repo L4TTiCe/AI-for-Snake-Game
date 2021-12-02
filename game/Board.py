@@ -31,13 +31,13 @@ class Board:
     def __init__(self, rows: int, cols: int, loop_around: bool):
         self.rows: int = rows
         self.cols: int = cols
-        self.loop_around = loop_around
+        self.loop_around: bool = loop_around
         self.snake = self.Snake()
         self.snake.body.append(self.initialize_snake())
-        self.fruit_pos = self.generate_fruit()
-        self.game_state = GameState.INPROGRESS
+        self.fruit_pos: Coordinates = self.generate_fruit()
+        self.game_state: GameState = GameState.INPROGRESS
         self.state = [[BoardState(States.NONE, Actions.NONE) for x in range(cols)] for y in range(rows)]
-        self.score = 0
+        self.score: int = 0
 
     def __str__(self):
         output = ""
@@ -67,7 +67,7 @@ class Board:
 
     def generate_fruit(self):
         """Function to generate a new random position for the fruit."""
-        fruit_pos = Coordinates(random.randrange(0, self.rows), random.randrange(0, self.cols))
+        fruit_pos: Coordinates = Coordinates(random.randrange(0, self.rows), random.randrange(0, self.cols))
 
         # Continually generate a location for the fruit until it is not in the snake's body
         while fruit_pos in self.snake.body:
