@@ -34,8 +34,6 @@ class Board:
         self.loop_around: bool = loop_around
         self.snake = self.Snake()
         self.snake.body.append(Coordinates(self.rows // 2, self.cols // 2))
-        print(self.snake.body)
-        print(self.snake.directions)
         self.game_state: GameState = GameState.INPROGRESS
         self.state = [[BoardState(States.NONE, Actions.NONE) for x in range(cols)] for y in range(rows)]
         self.score: int = 0
@@ -154,8 +152,6 @@ class Board:
         """Function that checks and handles if the snake has collided with a wall."""
 
         # Only need to check the collisions of the head of the snake
-        print(self.snake.body)
-        print(self.snake.directions)
         head = self.snake.body[0]
         head_y = head.y_coord
         head_x = head.x_coord
