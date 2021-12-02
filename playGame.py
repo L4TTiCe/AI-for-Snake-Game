@@ -3,7 +3,7 @@ import time
 import keyboard  # using module keyboard
 import pygame
 
-from game.Board import Directions
+from game.Board import Actions
 from game.GUI import GUI
 from game.SnakeGame import SnakeGame
 
@@ -21,23 +21,23 @@ def play_game():
     # https://stackoverflow.com/questions/24072790/how-to-detect-key-presses
     while not game.is_game_over():  # making a loop
         if keyboard.is_pressed('w'):  # if key 'q' is pressed
-            game.move_snake(Directions.UP)
+            game.move_snake(Actions.UP)
             time.sleep(sleep_time)
         if keyboard.is_pressed('s'):
-            game.move_snake(Directions.DOWN)
+            game.move_snake(Actions.DOWN)
             time.sleep(sleep_time)
         if keyboard.is_pressed('a'):
-            game.move_snake(Directions.LEFT)
+            game.move_snake(Actions.LEFT)
             time.sleep(sleep_time)
         if keyboard.is_pressed('d'):
-            game.move_snake(Directions.RIGHT)
+            game.move_snake(Actions.RIGHT)
             time.sleep(sleep_time)
 
         game.check_collisions()
         view.redraw_window(game)
         view.event_handler()
 
-    print(f'Game Over. You Scored: {game.get_score()}')
+    print(f'Game Over. You Scored: {game.board.get_score()}')
 
 
 # Press the green button in the gutter to run the script.

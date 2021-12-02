@@ -2,7 +2,7 @@ from enum import Enum
 
 
 # https://stackoverflow.com/questions/36932/how-can-i-represent-an-enum-in-python
-class Directions(Enum):
+class Actions(Enum):
     UP = "Directions.UP"
     DOWN = "Directions.DOWN"
     LEFT = "Directions.LEFT"

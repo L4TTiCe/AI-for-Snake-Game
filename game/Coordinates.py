@@ -1,4 +1,4 @@
-from game.Directions import Directions
+from game.Actions import Actions
 
 
 class Coordinates:
@@ -13,17 +13,17 @@ class Coordinates:
             return self.x_coord == other.x_coord and self.y_coord == other.y_coord
         return False
 
-    def apply_modifier(self, direction: Directions):
+    def apply_modifier(self, direction: Actions):
         match direction:
-            case Directions.UP:
+            case Actions.UP:
                 return Coordinates(self.x_coord - 1, self.y_coord)
-            case Directions.DOWN:
+            case Actions.DOWN:
                 return Coordinates(self.x_coord + 1, self.y_coord)
-            case Directions.LEFT:
+            case Actions.LEFT:
                 return Coordinates(self.x_coord, self.y_coord - 1)
-            case Directions.RIGHT:
+            case Actions.RIGHT:
                 return Coordinates(self.x_coord, self.y_coord + 1)
-            case Directions.NONE:
+            case Actions.NONE:
                 return Coordinates(self.x_coord, self.y_coord)
             case _:
                 raise NotImplementedError
