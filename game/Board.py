@@ -38,6 +38,7 @@ class Board:
         self.game_state: GameState = GameState.INPROGRESS
         self.state = [[BoardState(States.NONE, Actions.NONE) for x in range(cols)] for y in range(rows)]
         self.score: int = 0
+        self.update_board()
 
     def __str__(self):
         output = ""
@@ -218,7 +219,20 @@ class Board:
             case Actions.RIGHT:
                 self.snake.body.append(snake_tail.apply_modifier(Actions.LEFT))
             case _:
-                raise LookupError
+                print(tail_dir)
+                if tail_dir.__str__() == "[<Actions.UP: 2>]":
+                    self.snake.body.append(snake_tail.apply_modifier(Actions.DOWN))
+                elif tail_dir.__str__() == "[<Actions.DOWN: 8>]":
+                    self.snake.body.append(snake_tail.apply_modifier(Actions.UP))
+                elif tail_dir.__str__() == "[<Actions.LEFT: 4>]":
+                    self.snake.body.append(snake_tail.apply_modifier(Actions.RIGHT))
+                elif tail_dir.__str__() == "[<Actions.RIGHT: 6>]":
+                    self.snake.body.append(snake_tail.apply_modifier(Actions.LEFT))
+                elif tail_dir.__str__() == "[<Actions.NONE: 5>]":
+                    raise NotImplementedError
+                else:
+                    # print(action.__str__())
+                    raise LookupError
         self.update_board()
 
         # This functions returns a list of directions that the snake can take after the current position
