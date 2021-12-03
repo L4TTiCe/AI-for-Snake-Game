@@ -4,9 +4,9 @@ import time
 import pygame
 
 from game.Actions import Actions
-from game.GUI import GUI
+from game.GUI import Themes
+from game.GUI.GUIView import GUIView
 from game.SnakeGame import SnakeGame
-from pathtraversal.DFS import DFS
 from pathtraversal.BFS import BFS
 
 
@@ -25,7 +25,7 @@ def make_move(game, view, action):
 
 def main():
     game = SnakeGame(10, loop_around=True)
-    view = GUI()
+    view = GUIView(Themes.White())
     pygame.font.init()
     view.redraw_window(game)
 

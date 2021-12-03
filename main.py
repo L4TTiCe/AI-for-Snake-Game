@@ -1,18 +1,22 @@
 import pygame
 
 from game.Board import Actions
-from game.GUI import GUI
+from game.GUI import Themes
+from game.GUI.GUIView import GUIView
 from game.SnakeGame import SnakeGame
 
 
 def main():
     # size = int(input("Enter the size of the board: "))
     game = SnakeGame(10, loop_around=False)
-    view = GUI()
+    view = GUIView(Themes.Default())
     pygame.font.init()
     view.redraw_window(game)
 
     while not game.is_game_over():
+        # Reference:
+        # https://stackoverflow.com/questions/20165492/pygame-window-not-responding-after-a-few-seconds
+        pygame.event.get()
         print(game.get_board())
         print(f'Score: {game.board.get_score()}')
         token = input("Move: ")
@@ -29,7 +33,6 @@ def main():
                 print("Invalid token use WSAD")
 
         game.board.check_collisions()
-        game.board.possible_actions()
         view.redraw_window(game)
         view.event_handler()
 
