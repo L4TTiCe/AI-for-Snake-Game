@@ -5,20 +5,23 @@
 import pygame
 
 from game.Board import Actions
+from game.GUI import Themes
 from game.SnakeGame import SnakeGame
 
 
-class GUI:
-    def __init__(self):
+class GUIView:
+    def __init__(self, theme=Themes.White()):
         self.width = 750
         self.height = 750
         self.grid_start_y = 30
+        self.theme = theme
         self.win = pygame.display.set_mode((self.width, self.height))
 
     def redraw_window(self, game: SnakeGame):
         """Function to update the pygame window every frame, called from playSnakeGame.py."""
 
-        self.win.fill(pygame.Color(10, 49, 245))
+        # Board Tile color
+        self.win.fill(self.theme.get_board_color())
         self.draw_data_window(game)
         self.draw_grid(game)
         self.draw_grid_updates(game)
@@ -27,7 +30,7 @@ class GUI:
     def draw_data_window(self, game: SnakeGame):
         """Function to draw the segment of the pygame window with the score and high score."""
 
-        pygame.draw.rect(self.win, pygame.Color(20, 20, 20), (0, 0, self.width, self.grid_start_y))
+        pygame.draw.rect(self.win, pygame.Color(50, 50, 50), (0, 0, self.width, self.grid_start_y))
 
         # Add the score and high score
         font = pygame.font.SysFont('calibri', 20)
@@ -42,18 +45,20 @@ class GUI:
 
         for i in range(game.board.rows):
             # draw horizontal line
-            pygame.draw.line(self.win, pygame.Color(100, 100, 100), (0, space_row * i + self.grid_start_y),
+            pygame.draw.line(self.win, self.theme.get_grid_line_colors(), (0, space_row * i + self.grid_start_y),
                              (self.width, space_row * i + self.grid_start_y))
 
         for i in range(game.board.cols):
             # draw vertical line
-            pygame.draw.line(self.win, pygame.Color(100, 100, 100), (space_col * i, self.grid_start_y),
+            pygame.draw.line(self.win, self.theme.get_grid_line_colors(), (space_col * i, self.grid_start_y),
                              (space_col * i, self.height))
 
         # draw last lines so they are not cut off
-        pygame.draw.line(self.win, pygame.Color(100, 100, 100), (space_col * game.board.rows - 2, self.grid_start_y),
+        pygame.draw.line(self.win, self.theme.get_grid_line_colors(),
+                         (space_col * game.board.rows - 2, self.grid_start_y),
                          (space_col * game.board.rows - 2, self.height))
-        pygame.draw.line(self.win, pygame.Color(100, 100, 100), (0, self.height - 2), (self.width, self.height - 2))
+        pygame.draw.line(self.win, self.theme.get_grid_line_colors(), (0, self.height - 2),
+                         (self.width, self.height - 2))
 
     def draw_grid_updates(self, game: SnakeGame):
         """Function called from redraw_window() to update the grid area of the window."""
@@ -64,7 +69,7 @@ class GUI:
         # Draw the fruit
         fruit_y = game.board.fruit_pos.x_coord
         fruit_x = game.board.fruit_pos.y_coord
-        pygame.draw.rect(self.win, pygame.Color(250, 30, 30), (
+        pygame.draw.rect(self.win, self.theme.get_food_color(), (
             space_col * fruit_x + 1, self.grid_start_y + space_row * fruit_y + 1, space_col - 1, space_row - 1))
 
         # Draw the updated snake since last movement
@@ -72,7 +77,7 @@ class GUI:
             pos_y = pos.x_coord
             pos_x = pos.y_coord
 
-            pygame.draw.rect(self.win, pygame.Color(31, 240, 12), (
+            pygame.draw.rect(self.win, self.theme.get_snake_color(), (
                 space_col * pos_x + 1, self.grid_start_y + space_row * pos_y + 1, space_col - 1, space_row - 1))
 
         head = game.board.snake.body[0]
