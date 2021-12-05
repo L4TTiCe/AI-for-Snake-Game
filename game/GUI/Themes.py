@@ -7,6 +7,9 @@ class Theme:
         self.white = pygame.Color(255, 255, 255)
         self.red = pygame.Color(255, 0, 0)
 
+    def get_gradient_modifier(self):
+        return pygame.Color(0, 0, 0, 0)
+
     def get_board_color(self):
         return self.black
 
@@ -60,6 +63,9 @@ class BlackTerror(Theme):
 class White(Theme):
     def __init__(self):
         super().__init__()
+
+    def get_gradient_modifier(self):
+        return pygame.Color(10, 5, 0, 5)
 
     def get_board_color(self):
         return self.white

@@ -74,10 +74,18 @@ class GUIView:
 
         # Draw the updated snake since last movement
         for pos in game.board.snake.body:
+            gradient_modifier = game.board.snake.body.index(pos)
             pos_y = pos.x_coord
             pos_x = pos.y_coord
 
-            pygame.draw.rect(self.win, self.theme.get_snake_color(), (
+            body_tile_color: pygame.Color = self.theme.get_snake_color()
+            body_tile_color.update(
+                min(255, body_tile_color.r + (self.theme.get_gradient_modifier().r * gradient_modifier)),
+                min(255, body_tile_color.g + (self.theme.get_gradient_modifier().g * gradient_modifier)),
+                min(255, body_tile_color.b + (self.theme.get_gradient_modifier().b * gradient_modifier)),
+                max(100, body_tile_color.a - (self.theme.get_gradient_modifier().a * gradient_modifier))
+            )
+            pygame.draw.rect(self.win, body_tile_color, (
                 space_col * pos_x + 1, self.grid_start_y + space_row * pos_y + 1, space_col - 1, space_row - 1))
 
         head = game.board.snake.body[0]
