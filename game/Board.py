@@ -31,6 +31,7 @@ class Board:
     def __init__(self, rows: int, cols: int, loop_around: bool):
         self.rows: int = rows
         self.cols: int = cols
+        self.turn = 0
         self.loop_around: bool = loop_around
         self.snake = self.Snake()
         self.snake.body.append(Coordinates(self.rows // 2, self.cols // 2))
@@ -255,6 +256,7 @@ class Board:
         return possible_actions
 
     def move(self, action: Actions):
+        self.turn += 1
         self.snake.directions.appendleft(action)
         if len(self.snake.directions) > len(self.snake.body):
             self.snake.directions.pop()

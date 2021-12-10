@@ -5,6 +5,7 @@ from typing import List
 from game.Board import Board
 from game.Coordinates import Coordinates
 from pathtraversal.BoardWrapper import BoardWrapper
+from pathtraversal.Statistics import Metric
 
 
 def manhattan_distance(start: Coordinates, end: Coordinates, board: Board):
@@ -48,14 +49,19 @@ class AStar:
         self.visited: List[Coordinates] = []
         self.frontier = []
         self.counter: Counter = Counter()
+        self.metrics: Metric = Metric()
 
     def find_path(self):
         # Priority Queue Reference:
         # https://docs.python.org/3/library/heapq.html
         heappush(self.frontier, (0, self.counter.get_count(), BoardWrapper(self.board, [])))
+        self.metrics.score = self.board.score
+        self.metrics.turn = self.board.turn
 
         while len(self.frontier) > 0:
             _, _, curr_state = heappop(self.frontier)
+            self.metrics.nodes_expanded += 1
+
             if curr_state.board.snake.body[0] in self.visited:
                 continue
             else:
@@ -65,6 +71,8 @@ class AStar:
             curr_board = curr_state.board
 
             if curr_board.snake.body[0] == curr_board.fruit_pos:
+                print("Flushing Metrics to file.")
+                self.metrics.flush_metric("astar_manhattan_stat.csv")
                 return curr_actions
             possible_actions = curr_board.possible_actions()
 
@@ -74,5 +82,5 @@ class AStar:
                     updated_actions: List[action] = curr_actions.copy()
                     updated_actions.append(action)
                     heappush(self.frontier, (
-                        euclidean_distance(new_state.snake.body[0], curr_board.fruit_pos, new_state),
+                        manhattan_distance(new_state.snake.body[0], curr_board.fruit_pos, new_state),
                         self.counter.get_count(), BoardWrapper(new_state, updated_actions)))

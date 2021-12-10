@@ -3,6 +3,7 @@ from typing import List
 from game.Board import Board
 from game.Coordinates import Coordinates
 from pathtraversal.BoardWrapper import BoardWrapper
+from pathtraversal.Statistics import Metric
 
 
 class DFS:
@@ -11,12 +12,16 @@ class DFS:
 
         self.visited: List[Coordinates] = []
         self.frontier: List[BoardWrapper] = []
+        self.metrics: Metric = Metric()
 
     def find_path(self):
         self.frontier.append(BoardWrapper(self.board, []))
+        self.metrics.score = self.board.score
+        self.metrics.turn = self.board.turn
 
         while len(self.frontier) > 0:
             curr_state = self.frontier.pop()
+            self.metrics.nodes_expanded += 1
             if curr_state.board.snake.body[0] in self.visited:
                 continue
             else:
@@ -26,6 +31,8 @@ class DFS:
             curr_board = curr_state.board
 
             if curr_board.snake.body[0] == curr_board.fruit_pos:
+                print("Flushing Metrics to file.")
+                self.metrics.flush_metric("dfs_stat.csv")
                 return curr_actions
             possible_actions = curr_board.possible_actions()
 
