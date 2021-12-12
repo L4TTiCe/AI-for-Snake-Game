@@ -37,8 +37,8 @@ def main():
         # https://stackoverflow.com/questions/20165492/pygame-window-not-responding-after-a-few-seconds
         pygame.event.get()
 
-        traversal_agent = DFS(game.board)
-        actions = traversal_agent.find_path()
+        traversal_agent = DFS(game.board, False)
+        actions = traversal_agent.find_path(game.board.fruit_pos)
 
         if actions is None:
             print(game.board.possible_actions())
