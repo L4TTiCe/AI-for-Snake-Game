@@ -6,6 +6,7 @@ from enum import Enum
 from game.Actions import Actions
 from game.Coordinates import Coordinates
 from game.GameState import GameState
+from game.agents.boardAgent import get_fruit_pos_bfs
 
 
 class States(Enum):
@@ -27,12 +28,29 @@ class BoardState:
         return "<BoardState: %s>" % self
 
 
+
+# class CoordinateDistanceWrapper:
+#     def __init__(self, coordinate: Coordinates, distance: int):
+#         self.position: Coordinates = coordinate
+#         self.cost = distance
+#
+#
+# class Counter:
+#     def __init__(self):
+#         self.count = 0
+#
+#     def get_count(self):
+#         self.count += 1
+#         return self.count
+
+
 class Board:
-    def __init__(self, rows: int, cols: int, loop_around: bool):
+    def __init__(self, rows: int, cols: int, loop_around: bool, adversarial: bool):
         self.rows: int = rows
         self.cols: int = cols
         self.turn = 0
         self.loop_around: bool = loop_around
+        self.adversarial: bool = adversarial
         self.snake = self.Snake()
         self.snake.body.append(Coordinates(self.rows // 2, self.cols // 2))
         self.game_state: GameState = GameState.INPROGRESS
@@ -82,6 +100,8 @@ class Board:
     def generate_fruit(self):
         """Function to generate a new random position for the fruit."""
         if not self.is_board_full():
+            if self.adversarial and self.turn != 0:
+                return get_fruit_pos_bfs(self)
             fruit_pos: Coordinates = Coordinates(random.randrange(0, self.rows), random.randrange(0, self.cols))
 
             # Continually generate a location for the fruit until it is not in the snake's body
@@ -272,3 +292,45 @@ class Board:
             """Initializes Snake class"""
             self.body: list[Coordinates] = []
             self.directions = collections.deque()
+
+# def get_distance_deltas(board: Board, end: Coordinates, start: Coordinates):
+#     x_distance = abs(start.x_coord - end.x_coord)
+#     y_distance = abs(start.y_coord - end.y_coord)
+#     if board.loop_around:
+#         if x_distance > board.rows:
+#             x_distance -= board.rows
+#         if y_distance > board.cols:
+#             y_distance -= board.cols
+#     return x_distance, y_distance
+#
+#
+# def manhattan_distance(start: Coordinates, end: Coordinates, board: Board):
+#     # Reference:
+#     # https://stackoverflow.com/questions/3041366/shortest-distance-between-points-on-a-toroidally-wrapped-x-and-y-wrapping-ma
+#     x_distance, y_distance = get_distance_deltas(board, end, start)
+#     return x_distance + y_distance
+#
+#
+# def euclidean_distance(start: Coordinates, end: Coordinates, board: Board):
+#     # Reference:
+#     # https://blog.demofox.org/2017/10/01/calculating-the-distance-between-points-in-wrap-around-toroidal-space/
+#     x_distance, y_distance = get_distance_deltas(board, end, start)
+#     return math.sqrt((x_distance * x_distance) + (y_distance * y_distance))
+#
+#
+# def get_fruit_pos(board: Board):
+#     possible_options = []
+#     counter: Counter = Counter()
+#
+#     for rowIndex in range(board.rows):
+#         for colIndex in range(board.cols):
+#             current_coordinates: Coordinates = Coordinates(rowIndex, colIndex)
+#             if current_coordinates not in board.snake.body:
+#                 distance: int = manhattan_distance(board.snake.body[0], current_coordinates, board)
+#                 coordinate_distance: CoordinateDistanceWrapper = CoordinateDistanceWrapper(current_coordinates,
+#                                                                                            distance)
+#
+#                 heappush(possible_options, (-distance, counter.get_count(), coordinate_distance))
+#
+#     distance, _, coordinate_distance = heappop(possible_options)
+#     return coordinate_distance.position

@@ -9,9 +9,9 @@ from game.GameState import GameState
 
 class SnakeGame:
 
-    def __init__(self, size: int, loop_around):
+    def __init__(self, size: int, loop_around: bool, adversarial: bool):
         """Initializes the SnakeGame class."""
-        self.board = Board(size, size, loop_around)
+        self.board = Board(size, size, loop_around, adversarial)
 
     def move_snake(self, action: Actions):
         """Function to allow the user to move the snake with the arrow keys."""

@@ -1,14 +1,14 @@
 from typing import List
 import time
 
-from game.Board import Board
+# from game.Board import Board
 from game.Coordinates import Coordinates
 from pathtraversal.BoardWrapper import BoardWrapper
 from pathtraversal.Statistics import Metric
 
 
 class BFS:
-    def __init__(self, board: Board, debug: bool):
+    def __init__(self, board, debug: bool):
         self.board = board
 
         self.visited: List[Coordinates] = []

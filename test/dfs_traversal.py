@@ -24,7 +24,7 @@ def make_move(game, view, action):
 
 
 def main():
-    game = SnakeGame(5, loop_around=True)
+    game = SnakeGame(5, loop_around=True, adversarial=False)
     view = GUIView(Themes.White())
     pygame.font.init()
     view.redraw_window(game)
