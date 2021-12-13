@@ -1,22 +1,34 @@
 from typing import List
+import time
 
 from game.Board import Board
 from game.Coordinates import Coordinates
 from pathtraversal.BoardWrapper import BoardWrapper
+from pathtraversal.Statistics import Metric
 
 
 class DFS:
-    def __init__(self, board: Board):
+    def __init__(self, board: Board, debug: bool):
         self.board = board
 
         self.visited: List[Coordinates] = []
         self.frontier: List[BoardWrapper] = []
+        self.debug: bool = debug
+        if self.debug:
+            self.metrics: Metric = Metric()
 
-    def find_path(self):
+    def find_path(self, destination: Coordinates):
+        start_time = time.time()
+
         self.frontier.append(BoardWrapper(self.board, []))
+        if self.debug:
+            self.metrics.score = self.board.score
+            self.metrics.turn = self.board.turn
 
         while len(self.frontier) > 0:
             curr_state = self.frontier.pop()
+            if self.debug:
+                self.metrics.nodes_expanded += 1
             if curr_state.board.snake.body[0] in self.visited:
                 continue
             else:
@@ -25,7 +37,14 @@ class DFS:
             curr_actions = curr_state.action
             curr_board = curr_state.board
 
-            if curr_board.snake.body[0] == curr_board.fruit_pos:
+            if curr_board.snake.body[0] == destination:
+                exec_time = (time.time() - start_time)
+                if self.debug:
+                    self.metrics.time = exec_time
+                    print("DFS: Flushing Metrics to file.")
+                    self.metrics.flush_metric("dfs_stat.csv")
+                # else:
+                #     print(f"DFS Search succeeded in {exec_time}.")
                 return curr_actions
             possible_actions = curr_board.possible_actions()
 

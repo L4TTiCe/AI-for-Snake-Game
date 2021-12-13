@@ -24,7 +24,7 @@ def make_move(game, view, action):
 
 
 def main():
-    game = SnakeGame(10, loop_around=True)
+    game = SnakeGame(7, loop_around=True)
     view = GUIView(Themes.White())
     pygame.font.init()
     view.redraw_window(game)
@@ -37,7 +37,7 @@ def main():
         # https://stackoverflow.com/questions/20165492/pygame-window-not-responding-after-a-few-seconds
         pygame.event.get()
 
-        traversal_agent = AStar(game.board)
+        traversal_agent = AStar(game.board, True)
         actions = traversal_agent.find_path()
 
         if actions is None:
